@@ -48,7 +48,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
 
     private final CANCoder canCoder;
     private final CANCoderSimCollection canCoderSim;
-    @Log
+//    @Log
 //    private final double magEncoderOffset;
     @Log
     private final double canCoderOffset;
