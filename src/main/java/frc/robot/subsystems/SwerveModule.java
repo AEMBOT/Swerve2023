@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -42,10 +43,15 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     private final SparkMaxEncoderWrapper rotationEncoderWrapper;
 
 
-    private final DutyCycleEncoder magEncoder;
-    private final DutyCycleEncoderSim magEncoderSim;
+//    private final DutyCycleEncoder magEncoder;
+//    private final DutyCycleEncoderSim magEncoderSim;
+
+    private final CANCoder canCoder;
+    private final CANCoderSimCollection canCoderSim;
     @Log
-    private final double magEncoderOffset;
+//    private final double magEncoderOffset;
+    @Log
+    private final double canCoderOffset;
 
     //absolute offset for the CANCoder so that the wheels can be aligned when the robot is turned on
 
@@ -89,10 +95,23 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         driveEncoderWrapper = new SparkMaxEncoderWrapper(driveMotor);
         rotationEncoderWrapper = new SparkMaxEncoderWrapper(rotationMotor);
         //Config the mag encoder, which is directly on the module rotation shaft.
-        magEncoder = new DutyCycleEncoder(moduleConstants.magEncoderID);
+//        magEncoder = new DutyCycleEncoder(moduleConstants.magEncoderID);
+        canCoder = new CANCoder(moduleConstants.magEncoderID);
         //magEncoder.setDistancePerRotation(2*Math.PI);
-        magEncoder.setDutyCycleRange(1.0/4098.0, 4096.0/4098.0); //min and max pulse width from the mag encoder datasheet
-        magEncoderOffset = moduleConstants.magEncoderOffset;
+//        magEncoder.setDutyCycleRange(1.0/4098.0, 4096.0/4098.0); //min and max pulse width from the mag encoder datasheet
+//        magEncoderOffset = moduleConstants.magEncoderOffset;
+
+        canCoderOffset = moduleConstants.magEncoderOffset * 180.0 / Math.PI;
+        CANCoderConfiguration config = new CANCoderConfiguration();
+        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        config.unitString = "rad";
+        config.sensorCoefficient = 2 * Math.PI / 4096.0; // 2PI radians over 4096 ticks
+        config.sensorTimeBase = SensorTimeBase.PerSecond;
+        config.magnetOffsetDegrees = moduleConstants.magEncoderOffset * 180.0 / Math.PI;
+        config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+
+        canCoder.configAllSettings(config);
+
         //magEncoder.setPositionOffset(measuredOffsetRadians/(2*Math.PI));
         // The magnet in the module is not aligned straight down the direction the wheel points, but it is fixed in place.
         // This means we can subtract a fixed position offset from the encoder reading,
@@ -101,7 +120,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         
         //Allows us to set what the mag encoder reads in sim.
         // Start with what it would read if the module is forward.
-        magEncoderSim = new DutyCycleEncoderSim(magEncoder);
+//        magEncoderSim = new DutyCycleEncoderSim(magEncoder);
+        canCoderSim = canCoder.getSimCollection();
         // magEncoderSim.setAbsolutePosition(magEncoderOffset / (2*Math.PI));
 
         //Drive motors should brake, rotation motors should coast (to allow module realignment)
@@ -156,7 +176,10 @@ public class SwerveModule extends SubsystemBase implements Loggable {
      */
     @Log(methodName = "getRadians")
     public Rotation2d getMagEncoderAngle() {
-        double unsignedAngle = magEncoder.getAbsolutePosition() * 2*Math.PI - magEncoderOffset;
+//        double unsignedAngle = magEncoder.getAbsolutePosition() * 2*Math.PI - magEncoderOffset;
+//        return new Rotation2d(unsignedAngle);
+
+        double unsignedAngle = canCoder.getAbsolutePosition();
         return new Rotation2d(unsignedAngle);
     }
 
@@ -262,7 +285,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         driveEncoderWrapper.setSimPosition(wheelPos_m);
         driveEncoderWrapper.setSimVelocity(wheelVel_mps);
 
-        magEncoderSim.setAbsolutePosition((angle_rad +magEncoderOffset)/ (2*Math.PI));
+//        magEncoderSim.setAbsolutePosition((angle_rad +magEncoderOffset)/ (2*Math.PI));
+        canCoderSim.setRawPosition((int) (angle_rad * 4096 / 2 * Math.PI));
     }
 
     @Log
