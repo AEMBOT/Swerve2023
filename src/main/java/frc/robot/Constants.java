@@ -73,8 +73,8 @@ public class Constants {
         );
 
         
-        public static final double WHEEL_REVS_PER_ENC_REV = 1.0/5.14;
-        public static final double AZMTH_REVS_PER_ENC_REV = 1.0/12.8;
+        public static final double WHEEL_REVS_PER_ENC_REV = 1.0 / 6.75;
+        public static final double AZMTH_REVS_PER_ENC_REV = 1.0 / (150.0 / 7.0);
 
         public static final double rotationMotorMaxSpeedRadPerSec = 1.0;
         public static final double rotationMotorMaxAccelRadPerSecSq = 1.0;
