@@ -4,9 +4,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,7 +46,7 @@ public class RobotContainer {
     PathPlannerTrajectory pathPlannerTrajectory;
 
     public RobotContainer() {
-        target.setPose(new Pose2d(4, 4, new Rotation2d()));
+        target.setPose(new Pose2d(0, 0, new Rotation2d()));
         
         
         drivebaseS.setDefaultCommand(
@@ -81,6 +83,7 @@ public class RobotContainer {
     }
 
     public void onEnabled(){
-        drivebaseS.resetRelativeRotationEncoders();
+
+      //drivebaseS.resetRelativeRotationEncoders();
     }
 }

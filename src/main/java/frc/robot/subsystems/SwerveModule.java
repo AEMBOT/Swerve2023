@@ -42,18 +42,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     private final SparkMaxEncoderWrapper driveEncoderWrapper;
     private final SparkMaxEncoderWrapper rotationEncoderWrapper;
 
-
-//    private final DutyCycleEncoder magEncoder;
-//    private final DutyCycleEncoderSim magEncoderSim;
-
     private final CANCoder canCoder;
     private final CANCoderSimCollection canCoderSim;
-//    @Log
-//    private final double magEncoderOffset;
-    @Log
-    private final double canCoderOffset;
-
-    //absolute offset for the CANCoder so that the wheels can be aligned when the robot is turned on
 
     private final ProfiledPIDController rotationPIDController;
     // logging position error because it's actually the "process variable", vs its derivative
@@ -97,11 +87,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         //Config the mag encoder, which is directly on the module rotation shaft.
 //        magEncoder = new DutyCycleEncoder(moduleConstants.magEncoderID);
         canCoder = new CANCoder(moduleConstants.magEncoderID);
-        //magEncoder.setDistancePerRotation(2*Math.PI);
-//        magEncoder.setDutyCycleRange(1.0/4098.0, 4096.0/4098.0); //min and max pulse width from the mag encoder datasheet
-//        magEncoderOffset = moduleConstants.magEncoderOffset;
 
-        canCoderOffset = moduleConstants.magEncoderOffset * 180.0 / Math.PI;
         CANCoderConfiguration config = new CANCoderConfiguration();
         config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
         config.unitString = "rad";
@@ -122,7 +108,6 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         // Start with what it would read if the module is forward.
 //        magEncoderSim = new DutyCycleEncoderSim(magEncoder);
         canCoderSim = canCoder.getSimCollection();
-        // magEncoderSim.setAbsolutePosition(magEncoderOffset / (2*Math.PI));
 
         //Drive motors should brake, rotation motors should coast (to allow module realignment)
         driveMotor.setIdleMode(IdleMode.kBrake);
@@ -176,9 +161,6 @@ public class SwerveModule extends SubsystemBase implements Loggable {
      */
     @Log(methodName = "getRadians")
     public Rotation2d getMagEncoderAngle() {
-//        double unsignedAngle = magEncoder.getAbsolutePosition() * 2*Math.PI - magEncoderOffset;
-//        return new Rotation2d(unsignedAngle);
-
         double unsignedAngle = canCoder.getAbsolutePosition();
         return new Rotation2d(unsignedAngle);
     }
@@ -229,6 +211,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     */
     public void initRotationOffset() {
         rotationEncoderWrapper.setPosition(getMagEncoderAngle().getRadians());
+        System.out.println("initRotationOffset "  + getMagEncoderAngle().getRadians());
     }
 
     /**
@@ -285,7 +268,6 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         driveEncoderWrapper.setSimPosition(wheelPos_m);
         driveEncoderWrapper.setSimVelocity(wheelVel_mps);
 
-//        magEncoderSim.setAbsolutePosition((angle_rad +magEncoderOffset)/ (2*Math.PI));
         canCoderSim.setRawPosition((int) (angle_rad * 4096 / 2 * Math.PI));
     }
 

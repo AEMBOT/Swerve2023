@@ -126,8 +126,10 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
     
     public void drive(ChassisSpeeds speeds) {
         // use kinematics (wheel placements) to convert overall robot state to array of individual module states
-        SwerveModuleState[] states;
+        //SwerveModuleState[] states;
 
+        // For now, *don't* set the modules to whatever they were last at. Let them all go to 0
+/*
         // If we are stopped (no wheel velocity commanded) then any number of wheel angles could be valid.
         // By default it would point all modules forward when stopped. Here, we override this.
         if(Math.abs(speeds.vxMetersPerSecond) < 0.01
@@ -142,6 +144,13 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
                 DriveConstants.MAX_ROTATE_SPEED_RAD_PER_SEC,
                 DriveConstants.MAX_MODULE_SPEED_FPS);
         } 
+        */
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            states[i] = new SwerveModuleState(
+                0,
+                new Rotation2d(0));
+        }
         setModuleStates(states);
     }
 
