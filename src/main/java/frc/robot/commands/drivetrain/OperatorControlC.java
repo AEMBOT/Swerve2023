@@ -84,9 +84,9 @@ public class OperatorControlC extends CommandBase {
         //rot = Math.copySign(rot * rot, rot);
         rot = deadbandInputs(rot);
         rot = thetaRateLimiter.calculate(rot);
-        rot *= Units.degreesToRadians(DriveConstants.teleopTurnRateDegPerSec);
+        rot *= DriveConstants.teleopTurnRateDegPerSec;
 
-        drive.driveFieldRelativeHeading(new ChassisSpeeds(fwdX, fwdY, rot));
+        drive.driveFieldRelative(new ChassisSpeeds(fwdX, fwdY, rot));
     }
 
     // method to deadband inputs to eliminate tiny unwanted values from the joysticks

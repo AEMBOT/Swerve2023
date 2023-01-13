@@ -51,5 +51,15 @@
       <option name="name" value="maven" />
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="WPIcb311d09-36e9-4143-a032-55bb2b94443b_0Release" />
+      <option name="name" value="WPIcb311d09-36e9-4143-a032-55bb2b94443b_0Release" />
+      <option name="url" value="https://dev.studica.com/maven/release/2023/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="WPI3fcf3402-e646-4fa6-971e-18afe8173b1a_0Release" />
+      <option name="name" value="WPI3fcf3402-e646-4fa6-971e-18afe8173b1a_0Release" />
+      <option name="url" value="https://maven.ctr-electronics.com/release/" />
+    </remote-repository>
   </component>
 </project>

@@ -11,9 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveConstants.ModuleConstants;
+import frc.robot.util.NomadMathUtil;
 import frc.robot.util.sim.DutyCycleEncoderSim;
 import frc.robot.util.sim.SparkMaxEncoderWrapper;
 import io.github.oblarg.oblog.Loggable;
@@ -127,7 +129,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
 
         // For a velocity controller we just use P
         // (and feedforward, which is handled in #setDesiredStateClosedLoop)
-        drivePIDController = new PIDController(drivekP, 0, 0.1);
+        drivePIDController = new PIDController(drivekP, 0, 0);
         // Give this module a unique name on the dashboard so we have four separate sub-tabs.
         loggingName = "SwerveModule-" + moduleConstants.name + "-[" + driveMotor.getDeviceId() + ',' + rotationMotor.getDeviceId() + ']';
         resetDistance();
@@ -225,6 +227,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         // Save the desired state for reference (Simulation assumes the modules always are at the desired state)
         
         desiredState = SwerveModuleState.optimize(desiredState, getCanEncoderAngle());
+        desiredState = NomadMathUtil.optimize(desiredState, getCanEncoderAngle(), 90.0);
         SwerveModuleState previousState = this.desiredState;
         this.desiredState = desiredState;
 
@@ -232,9 +235,14 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         double goal = this.desiredState.angle.getRadians();
         double measurement = getCanEncoderAngle().getRadians();
         double rotationVolts = rotationPIDController.calculate(measurement, goal);
+        if (RobotBase.isReal()) {
+            // rotationVolts += kS
+            // Once we find kS, we add it to rotation voltage to improve the accuracy of the system
+        }
+
         double driveVolts = drivePIDController.calculate(getCurrentVelocityMetersPerSecond(), this.desiredState.speedMetersPerSecond)
-            + DriveConstants.driveFeedForward.calculate(this.desiredState.speedMetersPerSecond,
-            (this.desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.02);
+            + DriveConstants.driveFeedForward.calculate(this.desiredState.speedMetersPerSecond);
+            // (this.desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.02);
         rotationMotor.setVoltage(rotationVolts);
         driveMotor.setVoltage(driveVolts);
     }

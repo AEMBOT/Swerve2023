@@ -29,34 +29,6 @@ public class NomadMathUtil {
         return transform.getNorm();
     }
 
-    public static double calculateDistanceToTargetMeters(
-        double cameraHeightMeters,
-        double targetHeightMeters,
-        double cameraPitchRadians,
-        double targetPitchRadians,
-        double cameraYawRadians) {
-    return (targetHeightMeters - cameraHeightMeters)
-            / Math.tan(cameraPitchRadians + targetPitchRadians) / Math.cos(cameraYawRadians);
-    }
-
-    /**
-     * Gets the rotation of a Rotation2d in the range [0..2pi] instead of the default [-pi..pi]. 
-     * 
-     * This avoids wrapping problems 
-     * @param rotation
-     * @return
-     */
-    public static double modulus(Rotation2d rotation) {
-        return modulus(rotation.getRadians());
-    }
-
-    public static double modulus(double rotation) {
-        if(rotation < 0) {
-        rotation = 2*Math.PI + rotation;
-        }
-        return rotation;
-    }
-
     public static double subtractkS(double voltage, double kS) {
         if(Math.abs(voltage) <= kS) {
             voltage = 0;
@@ -81,7 +53,10 @@ public class NomadMathUtil {
         for (SwerveModuleState moduleState : desiredStates) {
           realMaxSpeed = Math.max(realMaxSpeed, Math.abs(moduleState.speedMetersPerSecond));
         }
-      
+
+        if (realMaxSpeed < k * kModuleMaxSpeedMetersPerSecond) {
+            return;
+        }
 
         double scale = Math.min(k * kModuleMaxSpeedMetersPerSecond / realMaxSpeed, 1);
         for (SwerveModuleState moduleState : desiredStates) {
@@ -89,5 +64,16 @@ public class NomadMathUtil {
         }
       }
 
-    
+    public static SwerveModuleState optimize(
+            SwerveModuleState desiredState, Rotation2d currentAngle, double flipThreshold
+    ) {
+        var delta = desiredState.angle.minus(currentAngle);
+        if (Math.abs(delta.getDegrees()) > flipThreshold) {
+            return new SwerveModuleState(
+                    -desiredState.speedMetersPerSecond,
+                    desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
+        } else {
+            return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+        }
+    }
 }
