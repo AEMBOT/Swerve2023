@@ -32,7 +32,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     private SwerveModuleState desiredState = new SwerveModuleState();
 
     private static final double rotationkP = 5.5 / 2.5;
-    private static final double rotationkD = 0.05 / 2.5;
+    //private static final double rotationkD = 0.05 / 2.5;
+    private static final double rotationkD = 0;
 
     private static final double drivekP = 1;
 
@@ -167,6 +168,17 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     public Rotation2d getMagEncoderAngle() {
         double unsignedAngle = canCoder.getAbsolutePosition() - magEncoderOffset;
         //double unsignedAngle = canCoder.getAbsolutePosition() ;
+        return new Rotation2d(unsignedAngle);
+    }
+
+
+    /**
+     * Returns the current angle of the module in radians, from the mag encoder.
+     * @return a Rotation2d, where 0 is forward and pi/-pi is backward.
+     */
+    @Log(methodName = "getRadians")
+    public Rotation2d getRawCANCoderAngle() {
+        double unsignedAngle = canCoder.getAbsolutePosition();
         return new Rotation2d(unsignedAngle);
     }
 
