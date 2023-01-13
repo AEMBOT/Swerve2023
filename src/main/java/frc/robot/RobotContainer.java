@@ -84,6 +84,6 @@ public class RobotContainer {
 
     public void onEnabled(){
 
-      //drivebaseS.resetRelativeRotationEncoders();
+        drivebaseS.resetRelativeRotationEncoders();
     }
 }

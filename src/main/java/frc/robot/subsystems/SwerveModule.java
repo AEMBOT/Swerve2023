@@ -48,6 +48,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
     private final CANCoderSimCollection canCoderSim;
 
     private final ProfiledPIDController rotationPIDController;
+    private final double magEncoderOffset;
     // logging position error because it's actually the "process variable", vs its derivative
     @Log(methodName="getPositionError", name="speedError")
     private final PIDController drivePIDController;
@@ -59,6 +60,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         rotationMotor = new CANSparkMax(moduleConstants.rotationMotorID, MotorType.kBrushless);
         driveMotor.restoreFactoryDefaults(false);
         rotationMotor.restoreFactoryDefaults(false);
+        magEncoderOffset = moduleConstants.magEncoderOffset;
 
         //set the output of the drive encoder to be in meters (instead of motor rots) for linear measurement
         // wheel diam * pi = wheel circumference (meters/wheel rot) *
@@ -95,7 +97,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         config.unitString = "rad";
         config.sensorCoefficient = 2 * Math.PI / 4096.0; // 2PI radians over 4096 ticks
         config.sensorTimeBase = SensorTimeBase.PerSecond;
-        config.magnetOffsetDegrees = moduleConstants.magEncoderOffset * 180.0 / Math.PI;
+        //config.magnetOffsetDegrees = moduleConstants.magEncoderOffset * 180.0 / Math.PI;
         config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
         canCoder.configAllSettings(config);
@@ -163,7 +165,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
      */
     @Log(methodName = "getRadians")
     public Rotation2d getMagEncoderAngle() {
-        double unsignedAngle = canCoder.getAbsolutePosition();
+        double unsignedAngle = canCoder.getAbsolutePosition() - magEncoderOffset;
+        //double unsignedAngle = canCoder.getAbsolutePosition() ;
         return new Rotation2d(unsignedAngle);
     }
 
@@ -212,7 +215,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
      * the module offset from forward.
     */
     public void initRotationOffset() {
-        rotationEncoderWrapper.setPosition(getMagEncoderAngle().getRadians());
+        rotationEncoderWrapper.setPosition(-getMagEncoderAngle().getRadians());
         System.out.println("initRotationOffset "  + getMagEncoderAngle().getRadians());
     }
 
@@ -235,11 +238,12 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         double goal = this.desiredState.angle.getRadians();
         double measurement = getCanEncoderAngle().getRadians();
         double rotationVolts = rotationPIDController.calculate(measurement, goal);
-        if (RobotBase.isReal()) {
-            // rotationVolts += kS
-            // Once we find kS, we add it to rotation voltage to improve the accuracy of the system
-        }
-
+        /*
+        if (rotationVolts > 0.0) {
+            rotationVolts += 0.03;
+        } else {
+            rotationVolts -= 0.03;
+        }*/
         double driveVolts = drivePIDController.calculate(getCurrentVelocityMetersPerSecond(), this.desiredState.speedMetersPerSecond)
             + DriveConstants.driveFeedForward.calculate(this.desiredState.speedMetersPerSecond);
             // (this.desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.02);
