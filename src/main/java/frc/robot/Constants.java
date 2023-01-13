@@ -39,10 +39,10 @@ public class Constants {
         static private double HW = WHEEL_BASE_WIDTH_M/2.0;
 
         public enum ModuleConstants {
-            FL("FL", 9, 2, 12, 5.506980, HW, HW),
-            FR("FR", 3, 4, 10, 2.104617, HW, -HW),
-            BL("BL", 5, 6, 13, 0.960270, -HW, HW),
-            BR("BR", 7, 8, 11, 4.517564, -HW, -HW);
+            FL("FL", 9, 2, 12, 2.365394, HW, HW),
+            FR("FR", 3, 4, 10,2.110753, HW, -HW),
+            BL("BL", 5, 6, 13, 0.955668, -HW, HW),
+            BR("BR", 7, 8, 11, 1.377512, -HW, -HW);
     
             public final String name;
             public final int driveMotorID;
@@ -81,7 +81,8 @@ public class Constants {
 
         //kv: (12 volts * 60 s/min * 1/5.14 WRevs/MRevs * wheel rad * 2pi  / (6000 MRPM *
         /** ks, kv, ka */ 
-        public static final double[] DRIVE_FF = {0.11452, 1.9844, 0.31123};
+        //public static final double[] DRIVE_FF = {0.11452, 1.9844, 0.31123};
+        public static final double[] DRIVE_FF = {0,0,0};
 
         public static final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(DRIVE_FF[0], DRIVE_FF[1], DRIVE_FF[2]);
         
