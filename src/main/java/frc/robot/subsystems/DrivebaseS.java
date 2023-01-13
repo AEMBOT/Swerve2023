@@ -166,7 +166,7 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
         double newTargetRadians = currentTargetRadians + (omegaRadiansPerSecond/50);
 
 
-        double commandRadiansPerSecond = 
+        double commandRadiansPerSecond =
         thetaController.calculate(getPoseHeading().getRadians(), newTargetRadians);
 
         speeds.omegaRadiansPerSecond = commandRadiansPerSecond;
@@ -395,19 +395,12 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
         field.setRobotPose(getPose());
         // Draw a pose that is based on the robot pose, but shifted by the translation of the module relative to robot center,
         // then rotated around its own center by the angle of the module.
-        field.getObject("frontLeft").setPose(
-            getPose().transformBy(new Transform2d(ModuleConstants.FL.centerOffset, getModuleStates()[FL].angle))
-        );
-        field.getObject("frontRight").setPose(
-            getPose().transformBy(new Transform2d(ModuleConstants.FR.centerOffset ,getModuleStates()[FR].angle))
-        );
-        field.getObject("backLeft").setPose(
-            getPose().transformBy(new Transform2d(ModuleConstants.BL.centerOffset, getModuleStates()[BL].angle))
-        );
-        field.getObject("backRight").setPose(
-            getPose().transformBy(new Transform2d(ModuleConstants.BR.centerOffset, getModuleStates()[BR].angle))
-        );
-        field.getObject("simPose").setPose(quadSwerveSim.getCurPose());
+        field.getObject("modules").setPoses(List.of(
+                getPose().transformBy(new Transform2d(ModuleConstants.FL.centerOffset, getModuleStates()[FL].angle)),
+                getPose().transformBy(new Transform2d(ModuleConstants.FR.centerOffset ,getModuleStates()[FR].angle)),
+                getPose().transformBy(new Transform2d(ModuleConstants.BL.centerOffset, getModuleStates()[BL].angle)),
+                getPose().transformBy(new Transform2d(ModuleConstants.BR.centerOffset, getModuleStates()[BR].angle))
+        ));
     }
 
     static SwerveModuleSim swerveSimModuleFactory(){

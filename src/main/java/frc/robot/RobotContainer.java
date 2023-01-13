@@ -70,7 +70,7 @@ public class RobotContainer {
                     Units.degreesToRadians(gamepad.getHID().getPOV()))
             )
         );
-        gamepad.a().whileTrue(drivebaseS.chasePoseC(target::getPose));
+        gamepad.a().toggleOnTrue(drivebaseS.chasePoseC(target::getPose));
     }
 
     public Command getAutonomousCommand() {
