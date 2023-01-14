@@ -31,7 +31,7 @@ public class OperatorControlC extends CommandBase {
     private final DoubleSupplier rotation;
     private final SlewRateLimiter thetaRateLimiter = new SlewRateLimiter(2);
 
-    private final double MAX_LINEAR_SPEED = 8;
+    private final double MAX_LINEAR_SPEED = 4;
 
     public OperatorControlC(
         DoubleSupplier fwdX, 
@@ -69,7 +69,7 @@ public class OperatorControlC extends CommandBase {
         fwdX = deadbandInputs(fwdX);
         fwdX = xRateLimiter.calculate(fwdX);
 
-        double fwdY = -forwardY.getAsDouble();
+        double fwdY = forwardY.getAsDouble();
         fwdY = Math.copySign(fwdY, fwdY);
         fwdY = deadbandInputs(fwdY);
         fwdY = yRateLimiter.calculate(fwdY);
@@ -80,7 +80,7 @@ public class OperatorControlC extends CommandBase {
         fwdX = driveMagnitude * Math.cos(driveDirectionRadians);
         fwdY = driveMagnitude * Math.sin(driveDirectionRadians);
 
-        double rot = -rotation.getAsDouble();
+        double rot = rotation.getAsDouble();
         //rot = Math.copySign(rot * rot, rot);
         rot = deadbandInputs(rot);
         rot = thetaRateLimiter.calculate(rot);
