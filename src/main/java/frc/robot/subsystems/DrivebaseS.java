@@ -111,7 +111,7 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
         
         odometry =
         new SwerveDriveOdometry(
-            m_kinematics, 
+            m_kinematics,
             new Rotation2d(getHeading().getRadians()),
             getModulePositions()
         );
@@ -208,11 +208,18 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
      * @return
      */
     private SwerveModuleState[] getStoppedStates() {
+//        SwerveModuleState[] states = new SwerveModuleState[4];
+//        for (int i = 0; i < NUM_MODULES; i++) {
+//            states[i] = new SwerveModuleState(
+//                0,
+//                new Rotation2d(MathUtil.angleModulus(modules.get(i).getCanEncoderAngle().getRadians())));
+//        }
+//        return states;
         SwerveModuleState[] states = new SwerveModuleState[4];
-        for (int i = 0; i < NUM_MODULES; i++) {
+        for (int i = 0; i < 4; i++) {
             states[i] = new SwerveModuleState(
-                0,
-                new Rotation2d(MathUtil.angleModulus(modules.get(i).getCanEncoderAngle().getRadians())));
+                    0,
+                    new Rotation2d(0));
         }
         return states;
     }

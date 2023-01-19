@@ -47,10 +47,15 @@ public class Constants {
             */
 
             //find a better solution later: changing FL to BL, FR to BR HW values
-            FL("FL", 9, 2, 12, 2.351588, -HW, HW),
-            FR("FR", 3, 4, 10, 2.109219, -HW, -HW),
-            BL("BL", 5, 6, 13, 0.971008, HW, HW),
-            BR("BR", 7, 8, 11, 1.366774 , HW, -HW);
+//            FL("FL", 9, 2, 12, 2.351588, -HW, HW),
+//            FR("FR", 3, 4, 10, 2.109219, -HW, -HW),
+//            BL("BL", 5, 6, 13, 0.971008, HW, HW),
+//            BR("BR", 7, 8, 11, 1.366774 , HW, -HW);
+
+            FL("FL", 9, 2, 12, 2.351588, HW, HW),
+            FR("FR", 3, 4, 10, 2.109219, HW, -HW),
+            BL("BL", 5, 6, 13, 0.971008, -HW, HW),
+            BR("BR", 7, 8, 11, 1.366774 , -HW, -HW);
     
             public final String name;
             public final int driveMotorID;
@@ -96,7 +101,7 @@ public class Constants {
         
 
         public static final double MAX_MODULE_SPEED_FPS = 19;
-        public static final double teleopTurnRateDegPerSec = 360; //Rate the robot will spin with full rotation command
+        public static final double teleopTurnRateDegPerSec = 1920; //Rate the robot will spin with full rotation command
 
         public static final int ENC_PULSE_PER_REV = 1;
         public static final double WHEEL_ENC_COUNTS_PER_WHEEL_REV = ENC_PULSE_PER_REV/ WHEEL_REVS_PER_ENC_REV;  //Assume 1-1 gearing for now

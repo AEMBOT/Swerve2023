@@ -118,6 +118,8 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         driveMotor.setIdleMode(IdleMode.kBrake);
         rotationMotor.setIdleMode(IdleMode.kCoast);
 
+        rotationMotor.setInverted(true);
+
         // Config the pid controllers
 
         // For a position controller we use a P loop on the position error
@@ -227,7 +229,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
      * the module offset from forward.
     */
     public void initRotationOffset() {
-        rotationEncoderWrapper.setPosition(-getMagEncoderAngle().getRadians());
+        rotationEncoderWrapper.setPosition(getMagEncoderAngle().getRadians());
         System.out.println("initRotationOffset "  + getMagEncoderAngle().getRadians());
     }
 
