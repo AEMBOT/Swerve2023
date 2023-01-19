@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivebaseS;
 
+import static edu.wpi.first.math.MathUtil.applyDeadband;
+
 public class OperatorControlC extends CommandBase {
 
     /**
@@ -32,6 +34,8 @@ public class OperatorControlC extends CommandBase {
     private final SlewRateLimiter thetaRateLimiter = new SlewRateLimiter(2);
 
     private final double MAX_LINEAR_SPEED = 4;
+
+    private final double JOYSTICK_DEADBAND = 0.07;
 
     public OperatorControlC(
         DoubleSupplier fwdX, 
@@ -66,12 +70,12 @@ public class OperatorControlC extends CommandBase {
 
         double fwdX = forwardX.getAsDouble();
         fwdX = Math.copySign(fwdX, fwdX);
-        fwdX = deadbandInputs(fwdX);
+        fwdX = applyDeadband(fwdX, JOYSTICK_DEADBAND);
         fwdX = xRateLimiter.calculate(fwdX);
 
         double fwdY = forwardY.getAsDouble();
         fwdY = Math.copySign(fwdY, fwdY);
-        fwdY = deadbandInputs(fwdY);
+        fwdY = applyDeadband(fwdY, JOYSTICK_DEADBAND);
         fwdY = yRateLimiter.calculate(fwdY);
 
         double driveDirectionRadians = Math.atan2(fwdY, fwdX);
@@ -82,7 +86,7 @@ public class OperatorControlC extends CommandBase {
 
         double rot = rotation.getAsDouble();
         //rot = Math.copySign(rot * rot, rot);
-        rot = deadbandInputs(rot);
+        rot = applyDeadband(rot, JOYSTICK_DEADBAND);
         rot = thetaRateLimiter.calculate(rot);
         rot *= Units.degreesToRadians(DriveConstants.teleopTurnRateDegPerSec);
         
@@ -90,13 +94,4 @@ public class OperatorControlC extends CommandBase {
         drive.driveFieldRelative(new ChassisSpeeds(fwdX, fwdY, rot));
 //        drive.drive(new ChassisSpeeds(fwdX, fwdY, rot));
     }
-
-    // method to deadband inputs to eliminate tiny unwanted values from the joysticks
-    public double deadbandInputs(double input) {
-
-        if (Math.abs(input) < 0.07) return 0.0;
-        return input;
-
-    }
-
 }
