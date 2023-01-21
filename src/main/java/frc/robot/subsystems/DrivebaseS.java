@@ -27,6 +27,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -75,7 +76,7 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
      * odometry for the robot, measured in meters for linear motion and radians for rotational motion
      * Takes in kinematics and robot angle for parameters
      */
-    private final SwerveDriveOdometry odometry;
+    private final SwerveDrivePoseEstimator odometry;
 
     private final List<SwerveModuleSim> moduleSims = List.of(
         DrivebaseS.swerveSimModuleFactory(),
@@ -110,10 +111,11 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
         navx.reset();
         
         odometry =
-        new SwerveDriveOdometry(
+        new SwerveDrivePoseEstimator(
             m_kinematics,
             new Rotation2d(getHeading().getRadians()),
-            getModulePositions()
+            getModulePositions(),
+            new Pose2d()
         );
         resetPose(new Pose2d());
     }
@@ -268,7 +270,7 @@ public class DrivebaseS extends SubsystemBase implements Loggable {
      * Based on drive encoder and gyro reading
      */
     public Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return odometry.getEstimatedPosition();
     }
 
     /**
