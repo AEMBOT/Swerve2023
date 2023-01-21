@@ -68,12 +68,12 @@ public class OperatorControlC extends CommandBase {
          * Otherwise, our max speed would be 1 meter per second and 1 radian per second
          */
 
-        double fwdX = forwardX.getAsDouble();
+        double fwdX = -forwardX.getAsDouble();
         fwdX = Math.copySign(fwdX, fwdX);
         fwdX = applyDeadband(fwdX, JOYSTICK_DEADBAND);
         fwdX = xRateLimiter.calculate(fwdX);
 
-        double fwdY = forwardY.getAsDouble();
+        double fwdY = -forwardY.getAsDouble();
         fwdY = Math.copySign(fwdY, fwdY);
         fwdY = applyDeadband(fwdY, JOYSTICK_DEADBAND);
         fwdY = yRateLimiter.calculate(fwdY);
@@ -84,7 +84,7 @@ public class OperatorControlC extends CommandBase {
         fwdX = driveMagnitude * Math.cos(driveDirectionRadians);
         fwdY = driveMagnitude * Math.sin(driveDirectionRadians);
 
-        double rot = rotation.getAsDouble();
+        double rot = -rotation.getAsDouble();
         //rot = Math.copySign(rot * rot, rot);
         rot = applyDeadband(rot, JOYSTICK_DEADBAND);
         rot = thetaRateLimiter.calculate(rot);

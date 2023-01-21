@@ -118,6 +118,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         driveMotor.setIdleMode(IdleMode.kBrake);
         rotationMotor.setIdleMode(IdleMode.kCoast);
 
+        driveMotor.setInverted(true);
         rotationMotor.setInverted(true);
 
         // Config the pid controllers
