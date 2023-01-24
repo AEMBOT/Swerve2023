@@ -31,11 +31,11 @@ public class SwerveModule extends SubsystemBase implements Loggable {
 
     private SwerveModuleState desiredState = new SwerveModuleState();
 
-    private static final double rotationkP = 5.5 / 2.5;
+    private static final double rotationkP = 3;
     //private static final double rotationkD = 0.05 / 2.5;
     private static final double rotationkD = 0;
 
-    private static final double drivekP = 1;
+    private static final double drivekP = 4.6; // 0.06 w/measurement delay?
 
     private final CANSparkMax driveMotor;
     private final CANSparkMax rotationMotor;
@@ -116,7 +116,7 @@ public class SwerveModule extends SubsystemBase implements Loggable {
 
         //Drive motors should brake, rotation motors should coast (to allow module realignment)
         driveMotor.setIdleMode(IdleMode.kBrake);
-        rotationMotor.setIdleMode(IdleMode.kCoast);
+        rotationMotor.setIdleMode(IdleMode.kBrake);
 
         driveMotor.setInverted(true);
         rotationMotor.setInverted(true);
@@ -253,12 +253,13 @@ public class SwerveModule extends SubsystemBase implements Loggable {
         double goal = this.desiredState.angle.getRadians();
         double measurement = getCanEncoderAngle().getRadians();
         double rotationVolts = rotationPIDController.calculate(measurement, goal);
-        /*
+//        /*
         if (rotationVolts > 0.0) {
-            rotationVolts += 0.03;
-        } else {
-            rotationVolts -= 0.03;
-        }*/
+            rotationVolts += 0.04;
+        } else if (rotationVolts < 0.0) {
+            rotationVolts -= 0.04;
+        }
+//        */
         double driveVolts = drivePIDController.calculate(getCurrentVelocityMetersPerSecond(), this.desiredState.speedMetersPerSecond)
             + DriveConstants.driveFeedForward.calculate(this.desiredState.speedMetersPerSecond);
             // (this.desiredState.speedMetersPerSecond - previousState.speedMetersPerSecond) / 0.02);

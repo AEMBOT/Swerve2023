@@ -95,7 +95,7 @@ public class Constants {
         //kv: (12 volts * 60 s/min * 1/5.14 WRevs/MRevs * wheel rad * 2pi  / (6000 MRPM *
         /** ks, kv, ka */ 
         //public static final double[] DRIVE_FF = {0.11452, 1.9844, 0.31123};
-        public static final double[] DRIVE_FF = {0,0,0};
+        public static final double[] DRIVE_FF = {0.055, 2.6826, 0.1188};
 
         public static final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(DRIVE_FF[0], DRIVE_FF[1], DRIVE_FF[2]);
         
